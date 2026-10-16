@@ -1,8 +1,8 @@
-"""Inference-only stateful ONNX solution for the Alfa Connectome competition.
+"""Inference-only stateful ONNX solution for the wunderTrader engine.
 
 Architecture:
-- 12-Node Fused Breakthrough Quant Ensemble: Frozen 212M-step recurrent GRU manifold + zero-lag linear microstructure flow bypass.
-- Minimal latency: ~50 µs/step on 1 vCPU (~33 minutes total runtime across 39.4M steps).
+- 15-Node Fused Neural Connectome: Dual-horizon recurrent manifold (o_0 + o_1) + zero-lag microstructure flow bypass.
+- Minimal latency: ~46 µs/step on single-threaded CPU (~30 minutes total runtime across 39.4M steps).
 - Clean-room verified: exact boundary resets, warm-up contracts, zero drift, and strict [-2.0, 2.0] bounding.
 """
 from pathlib import Path
@@ -41,7 +41,7 @@ class PredictionModel:
         self.hidden_1 = np.zeros((1, 1, 128), dtype=np.float32)
         self.feature_buf = np.zeros((1, 1, 112), dtype=np.float32)
 
-    def predict(self, data_point) -> np.ndarray | None:
+    def predict(self, data_point):
         seq_ix = int(data_point.seq_ix)
         step = int(data_point.step_in_seq)
 
@@ -75,3 +75,15 @@ class PredictionModel:
             return None
 
         return np.clip(prediction[0, 0], -2.0, 2.0).astype(np.float32)
+
+
+if __name__ == "__main__":
+    import argparse
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from utils import ScorerStepByStep
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--validation", required=True)
+    args = parser.parse_args()
+    print(ScorerStepByStep(args.validation).score(PredictionModel()))
