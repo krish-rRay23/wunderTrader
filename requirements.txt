@@ -1,0 +1,7 @@
+numpy>=1.26.0
+onnxruntime>=1.18.0
+torch>=2.0.0
+onnx>=1.14.0
+pyarrow>=14.0.0
+scipy>=1.11.0
+tqdm>=4.66.0
